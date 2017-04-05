@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Side-by-Side Histogram</title>
+        <meta charset="UTF-8" />
+        <meta name="author" content="Joeface" />
+        <script src="./js/d3.js" charset="utf-8"></script>
+    </head>
+    <style>
+        * {
+            font-family: sans-serif;
+        }
+
+        .chart {
+            padding: 10px;
+            clear: left;
+        }
+
+        .chart .bar15{
+            fill: red;
+            transition: opacity linear 0.3s;
+        }
+
+        .chart .bar15:hover {
+            opacity: 0.5;
+        }
+
+        .chart .bar16{
+            fill: steelblue;
+        }
+
+        .chart text {
+            fill: darkorchid;
+            font: 20px sans-serif;
+            text-anchor: end;
+        }
+
+        nav {
+            display: table-row;
+            clear: both;
+            width: 300px;
+        }
+
+        .selector{
+            display: table-cell;
+            
+        }
+
+        #selector1 {
+            border: red 2px solid;
+        }
+
+        #selector2 {
+            border: steelblue 2px solid;
+        }
+        svg{
+            float: left;
+        }
+
+        span.red-rext{
+            color: red;
+        }
+
+    </style>
+    <body>
+    </body>
+        <h1>Distribution of Properties by Council Tax Band</h1>
+        <h2>Combined Proportional Histogram</h2>
+        <p id="totalprops"></p>
+        <nav></nav>
+        <svg class="chart">
+        </svg>
+        <script>
+            // define global variables
+            var chartData;
+            var selector1;
+            var selector2;
+            var list1 = [];
+            var list2 = [];
+            var width = (window.innerWidth/10)*8,
+                height = (window.innerHeight/10)*8,
+                barHeight = width/9;
+            var x = d3.scaleLinear()
+                .range([0, ((height/100)*90)]);
+            var letters = d3.scaleOrdinal()
+                    .domain([0,1,2,3,4,5,6,7,8])
+                    .range(["A","B","C","D","E","F","G","H", "I"]);
+
+            // define functions for sanitising array and drawing chart
+            function buildArray(index){
+                var list = [parseInt(chartData[index].BAND_A.replace(/,/g,""), 10), parseInt(chartData[index].BAND_B.replace(/,/g,""), 10), parseInt(chartData[index].BAND_C.replace(/,/g,""), 10), parseInt(chartData[index].BAND_D.replace(/,/g,""), 10), parseInt(chartData[index].BAND_E.replace(/,/g,""), 10), parseInt(chartData[index].BAND_F.replace(/,/g,""), 10), parseInt(chartData[index].BAND_G.replace(/,/g,""), 10), parseInt(chartData[index].BAND_H.replace(/,/g,""), 10),parseInt(chartData[index].BAND_I.replace(/,/g,""),10)];
+                for (i=0; i < 8; i++){
+                    if(isNaN(list[i])){
+                        list[i] = 0
+                    }
+                }
+                if (isNaN(list[8])) {
+                    list.pop()
+                }
+                return list
+            }
+
+            function drawChart(list){
+                var chart = d3.select(".chart")
+                    .style("height", height)
+                    .style("width", width);
+
+                var year = d3.selectAll("text.year")
+                    .attr("x", width-25)
+                    .attr("y", 25)
+                    .style("font-size", 18);
+
+                var bar = chart.selectAll(".bar16")
+                    .data(list);
+                
+                var text = chart.selectAll(".label")
+                    .data(list);         
+
+                bar.exit().transition().remove();
+                text.exit().transition().remove();
+
+                bar.transition()
+                    .attr("transform", function(d,i){ return "translate(" + ((i * barHeight) + ((barHeight-1)/2)) + "," + (height - x(d) - (height/10)) + ")"; })
+                    .attr("height", function(d){ return x(d); })
+                    .attr("width", (barHeight-1)/2);
+                
+                text.transition()
+                    .attr("y", function(d){ return (height - (height/20)); })
+                    .attr("x", function(d,i){return (i * barHeight) + (barHeight / 2) + 2  })
+                    .attr("dy", ".35em")
+                    .text(function(d,i){return letters(i);}); 
+
+                bar.enter().append("rect")
+                    .attr("class","bar16")
+                    .attr("transform", function(d,i){ return "translate(" + ((i * barHeight) + ((barHeight-1)/2)) + "," + (height - x(d) - (height/10)) + ")"; })
+                    .attr("height", function(d){ return x(d); })
+                    .attr("width", (barHeight-1)/2);
+
+                text.enter().append("text")
+                    .attr("class", "label")
+                    .attr("y", function(d){ return (height - (height/20)); })
+                    .attr("x", function(d,i){return (i * barHeight) + (barHeight / 2) + 2  })
+                    .attr("dy", ".35em")
+                    .text(function(d,i){return letters(i);}); 
+            }
+
+            function updateData1(){
+                // build list
+                var list = buildArray(selector1.property('selectedIndex'));
+                
+                // alter variables
+                // barHeight = width / list.length;
+
+                x.domain([0, d3.max(list)]);
+
+                // draw chart
+                drawChart15(list);
+            };
+
+            function updateData2(){
+                // build list
+                var list = buildArray(selector2.property('selectedIndex'));
+
+                // barHeight = width / list.length;
+
+                x.domain([0, d3.max(list)]);
+                // draw chart
+                drawChart(list);
+            };
+
+            // 15
+            function drawChart15(list){
+                var chart = d3.select(".chart")
+                    .style("height", height)
+                    .style("width", width);
+
+                var bar = chart.selectAll(".bar15")
+                    .data(list);
+                
+                var text = chart.selectAll(".label")
+                    .data(list);         
+
+                bar.exit().transition().remove();
+                text.exit().transition().remove();
+
+                bar.transition()
+                    .attr("transform", function(d,i){ return "translate(" + (i * barHeight) + "," + (height - x(d) - (height/10)) + ")"; })
+                    .attr("height", function(d){ return x(d); })
+                    .attr("width", ((barHeight-1)/2)-1);
+                
+                text.transition()
+                    .attr("y", function(d){ return (height - (height/14)); })
+                    .attr("x", function(d,i){return (i * barHeight) + (barHeight / 2) + (barHeight /16 ) })
+                    .attr("dy", ".35em")
+                    .text(function(d,i){return letters(i);}); 
+
+                bar.enter().append("rect")
+                    .attr("class","bar15")
+                    .attr("transform", function(d,i){ return "translate(" + (i * barHeight) + "," + (height - x(d) - (height/10)) + ")"; })
+                    .attr("height", function(d){ return x(d); })
+                    .attr("width", ((barHeight-1)/2)-1);
+
+                text.enter().append("text")
+                    .attr("class", "label")
+                    .attr("y", function(d){ return (height - (height/14)); })
+                    .attr("x", function(d,i){return (i * barHeight) + (barHeight / 2) + (barHeight / 16) })
+                    .attr("dy", ".35em")
+                    .text(function(d,i){return letters(i);}); 
+            };
+
+
+                    // load data and draw default graph
+            d3.csv("./data/ctsop2016.csv", function(error, data){
+
+                // store data in global variable
+                chartData = data;
+
+                // build array for creating initial chart
+                var list = buildArray(0)
+
+                // adjust global variables that rely on data
+                barHeight = width / list.length;
+                x.domain([0, d3.max(list)]);
+
+                // create scrolling selector for 
+                selector1 = d3.select("nav")
+                                .append("select")
+                                .attr("class", "selector")
+                                .attr("id","selector1")
+                                .on("change", updateData1);
+
+                var options = selector1.selectAll("option")
+                                .data(data)
+                            .enter().append("option")
+                                .html(function(d){
+                                    return d.AREA_NAME.replace(" UA","");
+                                });
+
+                selector2 = d3.select("nav")
+                                .append("select")
+                                .attr("class","selector")
+                                .attr("id","selector2")
+                                .on("change", updateData2);
+
+                var options = selector2.selectAll("option")
+                                .data(data)
+                            .enter().append("option")
+                                .html(function(d){
+                                    return d.AREA_NAME.replace(" UA","");
+                                });
+                
+                // draw initial chart
+                drawChart(list)
+                drawChart15(list);
+            });
+        </script>
+    </body>
+</html>

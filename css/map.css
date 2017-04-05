@@ -1,0 +1,49 @@
+html, body, #vis {
+    margin: 0px;
+    padding: 0px;
+    height: 100vh;
+    width: 100%;
+    background-color: #eeeeee;
+    position: relative;
+    font-family: 'Open Sans', sans-serif;
+}
+
+header {
+    padding-left: 10px;
+    float: left;
+    height: 100vh;
+    max-width: 25%;
+}
+
+#vis {
+    float: right;
+    width: 74%;
+    margin: auto;
+}
+
+.area {
+    stroke: #000;
+    stroke-width: .1px;
+    fill: #f7f7f7;
+}
+
+#info {
+    /*position: absolute;*/
+    visibility: hidden;
+    z-index: 10;
+}
+
+#info.active {
+    visibility: visible;
+    background-color: #eee;
+    opacity: 0.9;
+}   
+
+p.red {
+    color: #b4001f;
+
+}     
+
+p.blue {
+    color: #0560a0;
+}
