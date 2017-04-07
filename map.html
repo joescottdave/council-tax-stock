@@ -4,17 +4,12 @@
         <title>Council Tax Stock of Properties in Wales</title>
         
         <meta charset="UTF-8" />
-        <meta name="author" content="c1554527" />
+        <meta name="author" content="Joseph Scott Davies" />
+        <meta name="viewport" content="width=device-width, initial-scale=1">
 
         <link rel="stylesheet" type="text/css" href="./css/map.css" />
 
         <style>
-        .circle {
-            fill: steelblue;
-            fill-opacity: .8;
-            stroke: #fff;
-        }
-
         .chart rect{
             fill: #EE4035;
         }
@@ -35,28 +30,6 @@
             margin: 10px;
             float: left;
             z-index: 1000;
-        }
-
-        /* from index */
-        .chart .bar-red{
-            fill: #e10000;
-        }
-
-        .chart .bar-blue{
-            fill: #4874ce;
-        }
-
-        .chart text {
-            font: 15px sans-serif;
-            text-anchor: end;
-        }
-
-        .chart .text-blue {
-            fill: #4874ce;
-        }
-
-        .chart .text-red {
-            fill: #e10000;
         }
 
     </style>
@@ -104,7 +77,7 @@
                 .domain([0,8])
                 .range(["#EE4035", "#F3A530" ,"#56B949", "#30499B"]);
 
-            var tax_data;
+            var wales_data;
 
             function draw(lad_bounds) {
                 projection
@@ -138,10 +111,10 @@
                 }else{
                     var id = this.id
                     console.log(this.id);
-                    var walesObject = (tax_data.filter(function(obj){
+                    var walesObject = (wales_data.filter(function(obj){
                         return obj.ECODE == "W92000004";
                     }))
-                    var arrayObject = (tax_data.filter(function(obj){
+                    var arrayObject = (wales_data.filter(function(obj){
                         return obj.ECODE == id;
                     }))
                     var list1 = buildArray(walesObject[0]);
@@ -188,11 +161,11 @@
                     .defer(d3.csv, "./data/ctsop2016.csv")
                     .defer(d3.csv, "./data/ctsop2015.csv")
                     .await(function(error, boundaries, ctsop2016, ctsop2015){
-                        tax_data = ctsop2016;
-                        console.log(tax_data.filter(function(obj){
-                            return obj.ECODE == "W06000023";
-                        }));
-                        
+                        wales_data = ctsop2016.filter(function(obj){
+                            if (/^W/.test(obj.ECODE)){
+                                return obj
+                            }
+                        });
                         draw(boundaries);
                     })
             }
@@ -216,14 +189,7 @@
                     .data(list);
                 
                 var text = chart.selectAll("text")
-                    .data(list);
-
-                // var selector = d3.select("select");
-                // console.log(selector.property('selectedIndex'))
-
-                // var heading = d3.select("nav").append("h2")
-                //     .html(chartData[selector.property('selectedIndex')].AREA_NAME)
-                //     .style("color", "red");             
+                    .data(list);           
 
                 bar.exit().transition().remove();
                 text.exit().transition().remove();
@@ -251,116 +217,7 @@
                     .text(function(d,i){return letters(i);}); 
             }
 
-            function drawChartProportional(list1, list2){
-                var chartWidth = 300,
-                chartHeight = 300,
-                barHeight = chartHeight/18;
-                barWidth = chartHeight/18;
-                console.log(chartWidth)
-                
-
-                var letters = d3.scaleOrdinal()
-                    .domain([0,1,2,3,4,5,6,7,8])
-                    .range(["A","B","C","D","E","F","G","H", "I"]);
-                var chart = d3.select(".chart")
-                    .style("height", chartHeight)
-                    .style("width", chartWidth);
-
-                var proportionalScale = d3.scaleLinear()
-                    .range([0, ((height/100)*90)]);
-                
-                var text = chart.selectAll(".label");
-                var textBlue = chart.selectAll(".text-blue")
-                    .data(list2);
-                var textRed = chart.selectAll(".text-red")
-                    .data(list1);
-                
-                var barBlue = chart.selectAll(".bar-blue")
-                    .data(list2);
-                var barRed = chart.selectAll(".bar-red")
-                    .data(list1);  
-
-                text.remove();
-                textRed.exit().transition().remove();
-                textBlue.exit().transition().remove();
-                barBlue.exit().transition().remove();
-                barRed.exit().transition().remove();
-
-                proportionalScale.domain([0,d3.max(list1)]);
-
-                barRed.transition()
-                    .attr("transform", function(d,i){ return "translate(" + (i * (barHeight/2)) + "," + (chartHeight - proportionalScale(d) - (chartHeight/10)) + ")"; })
-                    .attr("height", function(d){ return proportionalScale(d); })
-                
-                textRed.transition()
-                    .attr("transform", function(d,i){ return "translate(" + (i * (barHeight/2) + (barHeight/4)) + "," + (chartHeight - (chartHeight/13)) + ")"; })
-                    .text(function(d,i){ return letters(i) });
-
-                barRed.enter().append("rect")
-                    .attr("class","bar-red")
-                    .attr("transform", function(d,i){ return "translate(" + (i * (barHeight/2)) + "," + (chartHeight - proportionalScale(d) - (chartHeight/10)) + ")"; })
-                    .attr("height", function(d){ return proportionalScale(d); })
-                    .attr("width", barWidth-2);
-                
-                textRed.enter().append("text")
-                    .attr("class", "text-red")
-                    .attr("transform", function(d,i){ return "translate(" + (i * (barHeight/2) + (barHeight/4)) + "," + (chartHeight - (chartHeight/13)) + ")"; })
-                    .text(function(d,i){ return letters(i) });
-
-                proportionalScale.domain([0,d3.max(list2)]);
-
-                barBlue.transition()
-                    .attr("transform", function(d,i){ return "translate(" + ((i * barHeight/2) + (9*barHeight/2)) + "," + (chartHeight - proportionalScale(d) - (chartHeight/10)) + ")"; })
-                    .attr("height", function(d){ return proportionalScale(d); });
-
-                textBlue.transition()
-                    .attr("transform", function(d,i){ return "translate(" + (i * (barHeight/2) + (barHeight/4) + (9*barHeight/2)) + "," + (chartHeight - (chartHeight/13)) + ")"; })
-                    .text(function(d,i){ return letters(i) });
-
-                barBlue.enter().append("rect")
-                    .attr("class","bar-blue")
-                    .attr("transform", function(d,i){ return "translate(" + ((i * barHeight/2) + (9*barHeight/2)) + "," + (chartHeight - proportionalScale(d) - (chartHeight/10)) + ")"; })
-                    .attr("height", function(d){ return proportionalScale(d); })
-                    .attr("width", barWidth-2);
-
-                textBlue.enter().append("text")
-                    .attr("class", "text-blue")
-                    .attr("transform", function(d,i){ return "translate(" + (i * (barHeight/2) + (barHeight/4) + (9 * barHeight/2)) + "," + (chartHeight - (chartHeight/13)) + ")"; })
-                    .text(function(d,i){ return letters(i) });
-            }
-
             init();            
-
-                   
-                    // // Function for filling areas for chloropleth
-                    // .attr('fill', function(d){
-                    //     for(var i = 0; i < tax_data.length; i++){
-                    //         if(tax_data[i].ECODE === d.id){
-                    //             var key = Math.round(
-                    //                 (parseInt(tax_data[i].BAND_B.replace(',','')) / parseInt(tax_data[i].ALL_PROPERTIES.replace(',','')))*100
-                    //                 )
-                    //             console.log(tax_data[i].AREA_NAME, key)
-                    //             return colorThing(key)
-                    //         }
-                    //     }
-                    //     console.log('boo');
-                    //     return '#eeeeee';
-                    // })
-                    // var colorThing = d3.scale.linear()
-                    //     .domain([0,100])
-                    //     .range(["#FF0000", "#0000FF"]);
-
-                    // var colors = {
-                    //     "A": "#FF0000",
-                    //     "B": "#CC4400",
-                    //     "C": "#998800",
-                    //     "D": "#44CC00",
-                    //     "E": "#00FF00",
-                    //     "F": "#00CC44",
-                    //     "G": "#009988",
-                    //     "H": "#0044CC",
-                    //     "I": "#0000FF",
-                    // };
         </script>
     </body>
 </html>
