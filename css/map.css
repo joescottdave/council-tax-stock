@@ -1,4 +1,4 @@
-html, body, #vis {
+html, body, #map {
     margin: 0px;
     padding: 0px;
     height: 100vh;
@@ -10,20 +10,27 @@ html, body, #vis {
 
 header {
     padding-left: 10px;
-    float: left;
-    height: 100vh;
-    max-width: 25%;
+    display: block;
+    width: 100%;
 }
 
-#vis {
-    float: right;
-    width: 74%;
-    margin: auto;
+#histo{
+    float: left;
+    width: 32%;
+}
+
+svg.chart {
+    width: 30%;
+}
+
+#map {
+    float: left;
+    width: 60%;
 }
 
 .area {
-    stroke: #000;
-    stroke-width: .1px;
+    stroke: #f7f7f7;
+    stroke-width: 1px;
     fill: #f7f7f7;
 }
 
