@@ -17,7 +17,7 @@
 
             section{
                     width: 100%;
-                    height: 810px;
+                    height: 790px;
                     position: relative;
                 }
             
@@ -46,7 +46,7 @@
 
                 h1 {
                     position:absolute;
-                    top: 1em;
+                    top: 400px;
                 }
 
                 section div{
@@ -98,7 +98,7 @@
             <div id="map"><!--<p>Click to see an individual county's distribution</p>--></div>
         </section>
         <section>
-            <div>
+            <div id="median-key">
                 <h2>Median</h2>
             </div>
             <div id="median-map">
@@ -257,8 +257,8 @@
             }
 
             function drawChart(list, name){
-                var chartWidth = document.getElementById("chart").clientWidth,
-                chartHeight = document.getElementById("chart").clientHeight,
+                var chartWidth = document.getElementById("chart").offsetWidth,
+                chartHeight = document.getElementById("chart").offsetHeight,
                 barHeight = chartHeight/9;
                 var x = d3.scaleLinear()
                     .domain([0,d3.max(list)])
@@ -304,7 +304,7 @@
                 count +=1
             }
 
-            var getMedianHousehold = function(d){
+            function getMedianHousehold(d){
                 // variable I want returned to produce fill color
                 var medColor;
 
