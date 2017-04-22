@@ -1,4 +1,4 @@
-html, body, #map {
+html, body, #map, #median-map {
     margin: 0px;
     padding: 0px;
     height: 100vh;
@@ -23,14 +23,14 @@ svg.chart {
     width: 30%;
 }
 
-#map {
+#map, #median-map {
     float: left;
     width: 60%;
 }
 
 .area {
     stroke: #f7f7f7;
-    stroke-width: 1px;
+    stroke-width: 2px;
     fill: #f7f7f7;
 }
 

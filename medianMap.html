@@ -151,6 +151,7 @@
                     .attr('id', function(d) { return d['id']; })
                     .attr('d', path)
                     // .style('fill', medianColors(2))
+                    .style('stroke', '#f7f7f7')
                     .style('fill', function(d){ return getMedianHousehold(d) })
                     // .on("click", clicking);
 
@@ -192,8 +193,10 @@
             }
 
             function init() {
-                width = document.getElementById("map").clientWidth;
-                height = document.getElementById("map").clientHeight;
+                // width = document.getElementById("map").clientWidth;
+                // height = document.getElementById("map").clientHeight;
+                width = 666
+                height = 807
 
                 map = d3.select("#map")
                     .append("svg")
