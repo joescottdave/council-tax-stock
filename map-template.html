@@ -65,8 +65,6 @@
                 section div:nth-child(2){
                     top: 0;
                 }
-
-
             
             @media screen and (min-aspect-ratio: 3/4) {
                 section div{
@@ -94,7 +92,7 @@
         <section>
             <div><h1>Council Tax Stock of Properties in Wales</h1></div></section>
         <section>
-            <div id="chart"><h2>Distribution of Properties by Council Tax Band in Wales</h2></div>
+            <div id="chart"><h2>Distribution of Properties by Council Tax Band in <span id="location">Wales</span></h2></div>
             <div id="map"><!--<p>Click to see an individual county's distribution</p>--></div>
         </section>
         <section>
@@ -252,7 +250,7 @@
                             return obj.ECODE == "W92000004";
                         }));
                         var list1 = buildArray(walesObject[0]);
-                        drawChart(list1);
+                        drawChart(list1, "Wales / Cymru");
                     })
             }
 
@@ -260,6 +258,11 @@
                 var chartWidth = document.getElementById("chart").offsetHeight,
                 chartHeight = document.getElementById("chart").offsetWidth,
                 barHeight = chartHeight/9;
+                var locationSpan = document.getElementById("location");
+                locationSpan.innerHTML = name;
+                if (/^Isle/.test(name)){
+                    locationSpan.innerHTML = "Isle of Anglesey / Ynys M&#0244;n"
+                }
                 var x = d3.scaleLinear()
                     .domain([0,d3.max(list)])
                     .range([0, ((chartHeight/100)*90)]);
