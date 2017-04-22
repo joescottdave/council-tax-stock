@@ -257,8 +257,8 @@
             }
 
             function drawChart(list, name){
-                var chartWidth = document.getElementById("chart").offsetWidth,
-                chartHeight = document.getElementById("chart").offsetHeight,
+                var chartWidth = document.getElementById("chart").offsetHeight,
+                chartHeight = document.getElementById("chart").offsetWidth,
                 barHeight = chartHeight/9;
                 var x = d3.scaleLinear()
                     .domain([0,d3.max(list)])
