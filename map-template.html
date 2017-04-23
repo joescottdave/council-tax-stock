@@ -154,8 +154,13 @@
                 <!--<h2 class="label">Median</h2>-->
             </section>
             <section>
-                <div><h2>Comparison with Wages</h2></div>
-                <div></div>
+                <div>
+                    <h2>Comparison with Wages</h2>
+                    <div class="selectors">
+                    <!-- selectors go here -->
+                    </div>
+                </div>
+                <div id="money-map"></div>
             </section>
         </div>
          <!-- javascript -->
@@ -176,6 +181,7 @@
             var svg;
             var g;
             var key;
+            var gMoney;
 
             var projection;
             var path;
@@ -195,6 +201,10 @@
 
             var wales_data;
             var charge_data;
+            var rent_data;
+            var wage_data;
+            var rentRatios = [];
+            var wageRatios = [];
 
             function draw(lad_bounds) {
                 projection
@@ -262,6 +272,50 @@
                     // .style("fill", function(d,i){ return letterColor(i); })
                     .style("fill", "black")
                     .text(function(d,i){ return "Band " + letter(d); });
+
+                    var areasMoney = gMoney.selectAll(".area")
+                    .data(topojson.feature(lad_bounds, lad_bounds.objects['lad']).features);
+
+                areasMoney
+                    .enter()
+                    .append('path')
+                    .attr('class', 'moneyarea')
+                    .attr('data-key', function(d) { return d['id']; })
+                    .attr('data-color', '#f7f7f7')
+                    .attr('data-band', function(d) { return getMedianHouseholdBand(d); })
+                    .attr('data-charge', function(d){
+                        var band = getMedianHouseholdBand(d)
+                        var id = d['id']
+                        var arrayObject = charge_data.filter(function(obj){
+                            return obj.ECODE == id
+                        })
+                        return arrayObject[0][band+" "];
+                    })
+                    .attr('data-rent', function(d){
+                        var band = getMedianHouseholdBand(d)
+                        var id = d['id']
+                        var arrayObject = rent_data.filter(function(obj){
+                            return obj.ECODE == id
+                        })
+                        var rentRatio = this.dataset.charge / arrayObject[0]["2 Bedrooms"];
+                        rentRatios.push(rentRatio);
+                        rentRatios.sort();
+                        return arrayObject[0]["2 Bedrooms"];
+                    })
+                    .attr('data-wage', function(d){
+                        var band = getMedianHouseholdBand(d)
+                        var id = d['id']
+                        var arrayObject = wage_data.filter(function(obj){
+                            return obj.ECODE == id
+                        })
+                        var wageRatio = this.dataset.charge / arrayObject[0]['2016 (13)'];
+                        wageRatios.push(wageRatio);
+                        wageRatios.sort();
+                        return arrayObject[0]['2016 (13)'];
+                    })
+                    .attr('d', path)
+                    .style('stroke', '#f7f7f7');
+                colorMoneyMap('Wages');
                 
             }
 
@@ -348,11 +402,50 @@
                 
                 gChart = chart.append("g");
 
+                selector1 = d3.select(".selectors")
+                                .append("select")
+                                .attr("class", "selector")
+                                .attr("id","selector1")
+                                .on("change", function(){
+                                    colorMoneyMap(this.value);
+                                });
+
+                var options = selector1.selectAll("option")
+                                .data(["Wages", "Rent"])
+                            .enter().append("option")
+                                .html(function(d){
+                                    return d;
+                                });
+
+                selector2 = d3.select(".selectors")
+                                .append("select")
+                                .attr("class", "selector")
+                                .attr("id","selector2")
+                                .on("change", function(){
+                                     colorMoneyMap(document.getElementById('selector1').value);
+                                });
+
+                var options = selector2.selectAll("option")
+                                .data(["1 Bedroom", "2 Bedrooms", "3 Bedrooms", "4 Bedrooms"])
+                            .enter().append("option")
+                                .html(function(d){
+                                    return d;
+                                });
+
+                moneyMap = d3.select("#money-map")
+                    .append("svg")
+                    .attr("width", width)
+                    .attr("height", height);
+                
+                gMoney = moneyMap.append("g");
+
                 queue()
                     .defer(d3.json, "./geoJSON/topo_lad.json")
                     .defer(d3.csv, "./data/ctsop2016.csv")
                     .defer(d3.csv, "./data/ctcharges.csv")
-                    .await(function(error, boundaries, ctsop2016, ctcharges){
+                    .defer(d3.csv, "./data/medianearnings.csv")
+                    .defer(d3.csv, "./data/medianrents.csv")
+                    .await(function(error, boundaries, ctsop2016, ctcharges, wages, rents){
                         wales_data = ctsop2016.filter(function(obj){
                             if (/^W/.test(obj.ECODE)){
                                 return obj
@@ -363,7 +456,8 @@
                                 return obj
                             }
                         });
-                        console.log(charge_data);
+                        wage_data = wages;
+                        rent_data = rents;
                         draw(boundaries);
                         var walesObject = (wales_data.filter(function(obj){
                             return obj.ECODE == "W92000004";
@@ -451,7 +545,7 @@
                 }
                 // return newly arrived at color
                 return medColor;
-            };
+            }
 
             function getMedianHouseholdBand(d){
                 // variable I want returned to produce fill color
@@ -480,7 +574,34 @@
                 }
                 // return newly arrived at color
                 return band;
-            };
+            }
+
+            function colorMoneyMap(input){
+                console.log(rentRatios.length);
+                d3.selectAll(".moneyarea")
+                    .style("fill", function(d){
+                        var id = this.dataset.key;
+                        secondValue = document.getElementById("selector2").value;
+                        if (input == "Rent"){
+                            document.getElementById("selector2").style.visibility = "visible"
+                            var arrayObject = rent_data.filter(function(obj){
+                                return obj.ECODE == id;
+                            });
+                            var rentRatio = this.dataset.charge / arrayObject[0][secondValue];
+                            var ratioScale = d3.scaleLinear()
+                                                .domain([d3.min(rentRatios), d3.max(rentRatios)])
+                                                .range(["#FFF", "#EE4035"]);
+                            return ratioScale(rentRatio);
+                        } else {
+                            document.getElementById("selector2").style.visibility = "hidden"
+                            var ratio = this.dataset.charge / this.dataset.wage;
+                            var ratioScale = d3.scaleLinear()
+                                                .domain([d3.min(wageRatios), d3.max(wageRatios)])
+                                                .range(["#FFF", "#56B949"]);
+                            return ratioScale(ratio);
+                        }
+                    });
+            }
 
             init();            
         </script>

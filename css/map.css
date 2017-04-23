@@ -23,7 +23,7 @@ svg.chart {
     width: 30%;
 }
 
-#map, #median-map {
+#map, #median-map, #money-map{
     float: left;
     width: 60%;
 }
