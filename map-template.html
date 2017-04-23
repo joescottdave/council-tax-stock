@@ -47,7 +47,7 @@
                 h1, h2, svg text{
                     color: white;
                     height: 20px;
-                    line-height: 15px;
+                    line-height: 21px;
                     font-size: 15px;
                 }
 
@@ -126,7 +126,7 @@
     <body>
         <div id="app">
             <section>
-                <div><h1>Council Tax Stock of Properties in Wales</h1></div>
+                <div><h1>Visualising <br />Council Tax Stock of Properties in Wales</h1></div>
             </section>
             <section>
                 <div id="chart">
@@ -259,6 +259,8 @@
                     var list2 = buildArray(arrayObject[0]);
                     var areaName = arrayObject[0].AREA_NAME;
                     console.log(areaName);
+                    var locationSpan = d3.select("#location");
+                    locationSpan.transition(1).style("color",medianColors(0));
                     active.style("fill", medianColors(2));
                     active = d3.select(this);
                     active.style("fill", medianColors(0));
