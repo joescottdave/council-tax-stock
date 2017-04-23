@@ -12,7 +12,6 @@
         <script src="./js/d3.js"></script>
         <script src="//cdnjs.cloudflare.com/ajax/libs/queue-async/1.0.7/queue.min.js"></script>
         <script src="//cdnjs.cloudflare.com/ajax/libs/topojson/1.6.20/topojson.min.js"></script>
-
     </head>
     <body>
         <div id="app">
@@ -30,7 +29,7 @@
                 <div>
                     <h2 class="black">Median</h2>
                     <p class="black">The map <span id="median-map-placement"></span> shows the Council Tax Band of the median property within each of Wales&apos; Local Authorities</p>
-                    <p>The median property for the whole of Wales is in Council Tax Band C as it is in 10 of its Local Authorities.  The average annual council tax bill for such a property is shown below: <br /><span id="council-tax-bill">£1262.22</span><br />Clicking on the map will show you the bill for the median property in the relevant area.</p>
+                    <p>The median property for the whole of Wales is in Council Tax Band C as it is in 10 of its Local Authorities.  The average annual council tax bill for such a property is shown below: <br /><span id="council-tax-bill">£1262.22</span><span id="second_location">&nbsp;in Wales</span><br />Clicking on the map will show you the bill for the median property in the relevant area.</p>
                 </div>
                 <div id="median-map">
                 </div>
@@ -173,10 +172,10 @@
                         var arrayObject = rent_data.filter(function(obj){
                             return obj.ECODE == id
                         })
-                        var rentRatio = this.dataset.charge / arrayObject[0]["2 Bedrooms"];
+                        var rentRatio = this.dataset.charge / arrayObject[0]["1 Bedroom"];
                         rentRatios.push(rentRatio);
                         rentRatios.sort();
-                        return arrayObject[0]["2 Bedrooms"];
+                        return arrayObject[0]["1 Bedroom"];
                     })
                     .attr('data-wage', function(d){
                         var band = getMedianHouseholdBand(d)
@@ -222,6 +221,9 @@
                     var arrayObject = (charge_data.filter(function(obj){
                         return obj.ECODE == id;
                     }));
+                var location = d3.select("#second_location");
+                location.html("in " + arrayObject[0]["AREA_NAME"])
+                    .style("color", this.dataset.color );
                 bill.html("£" + arrayObject[0][this.dataset.band + " "]);
                 console.log(arrayObject[0][this.dataset.band + " "]);
             }
@@ -465,7 +467,7 @@
                             });
                             var rentRatio = this.dataset.charge / arrayObject[0][secondValue];
                             var ratioScale = d3.scaleLinear()
-                                                .domain([d3.min(rentRatios), d3.max(rentRatios)])
+                                                .domain([1.8, d3.max(rentRatios)])
                                                 .range(["#FFF", "#EE4035"]);
                             return ratioScale(rentRatio);
                         } else {
