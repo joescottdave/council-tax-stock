@@ -7,7 +7,8 @@
 
         <title>Template</title>
 
-        <link href='http://fonts.googleapis.com/css?family=Open+Sans:300' rel='stylesheet' type='text/css'>
+        <link href='http://fonts.googleapis.com/css?family=Open+Sans:300' rel='stylesheet' type='text/css' />
+        <link href='./css/template.css' rel='stylesheet' type='text/css' />
         <style>
             body{
                 margin:0;
@@ -273,7 +274,7 @@
                     .style("fill", "black")
                     .text(function(d,i){ return "Band " + letter(d); });
 
-                    var areasMoney = gMoney.selectAll(".area")
+                var areasMoney = gMoney.selectAll(".area")
                     .data(topojson.feature(lad_bounds, lad_bounds.objects['lad']).features);
 
                 areasMoney

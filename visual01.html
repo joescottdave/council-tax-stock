@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Working Changeable Histogram</title>
+        <meta charset="UTF-8" />
+        <meta name="author" content="Joeface" />
+        <script src="./js/d3.js" charset="utf-8"></script>
+    <style>
+        * {
+            font-family: sans-serif;
+        }
+
+        .chart {
+            padding: 10px;
+            clear: left;
+        }
+
+        .chart .bar-red{
+            fill: #e10000;
+        }
+
+        .chart .bar-blue{
+            fill: #4874ce;
+        }
+
+        .chart text {
+            font: 15px sans-serif;
+            text-anchor: end;
+        }
+
+        .chart .text-blue {
+            fill: #4874ce;
+        }
+
+        .chart .text-red {
+            fill: #e10000;
+        }
+
+        .chart .medLine {
+            fill: black;
+        }
+
+        div#vis {
+            clear: right;
+            float: left;
+        }
+
+        div.switch, div.selectors {
+            float: left;
+        }
+
+        nav{
+            clear: right;
+        }
+
+        footer{
+            float: left;
+            clear: both;
+        }
+
+        #selector1 {
+            border: #e10000 2.5px solid;
+        }
+
+        #selector2 {
+            border: #4874ce 2.5px solid;
+        }
+        svg{
+            margin: 0 auto;
+            flex-grow: 1;
+        }
+
+    </style>
+    </head>
+    <body>
+        <div id="app">
+            <h1>Distribution of UK Residential Properties by Council Tax Band and Region</h1>
+            <h2>2016</h2>
+            <nav>
+                <div class="selectors">
+                    <!-- selectors go here -->
+                </div>
+                <div class="switch">
+                    <form>
+                        <input type="radio" id="switch_two" name="switch" value="proportional" checked onchange="propToggle()" />
+                        <label for="switch_two">Proportional</label>
+                        <input type="radio" id="switch_one" name="switch" value="absolute" onchange="propToggle()"/>
+                        <label for="switch_one">Absolute</label>
+                    </form>
+                </div>
+            </nav>
+            <div id="vis">
+            <svg class="chart">
+            </svg>
+            </div>
+        </div><!-- #app -->
+        <footer>Source: <a href="https://www.gov.uk/government/statistics/council-tax-stock-of-properties-2016">Council Tax: Stock of Properties 2016</a></footer>
+        <script>
+            // define global variables
+            var width = (window.innerHeight/10)*8,
+                height = (window.innerHeight/10)*8,
+                barHeight = (width/9) - 2,
+                barWidth = (width/18);
+            var chart = d3.select(".chart")
+                    .style("height", height)
+                    .style("width", width);
+            var chartData;
+            var selector1;
+            var selector2;
+          
+            var letters = d3.scaleOrdinal()
+                    .domain([0,1,2,3,4,5,6,7,8])
+                    .range(["A","B","C","D","E","F","G","H", "I"]);
+            var proportionalToggle = true;
+
+            // function for constructing array and sanitising data
+            function buildArray(index){
+                var list = [parseInt(chartData[index].BAND_A.replace(/,/g,""), 10), parseInt(chartData[index].BAND_B.replace(/,/g,""), 10), parseInt(chartData[index].BAND_C.replace(/,/g,""), 10), parseInt(chartData[index].BAND_D.replace(/,/g,""), 10), parseInt(chartData[index].BAND_E.replace(/,/g,""), 10), parseInt(chartData[index].BAND_F.replace(/,/g,""), 10), parseInt(chartData[index].BAND_G.replace(/,/g,""), 10), parseInt(chartData[index].BAND_H.replace(/,/g,""), 10),parseInt(chartData[index].BAND_I.replace(/,/g,""),10)];
+                for (i=0; i < 8; i++){
+                    if(isNaN(list[i])){
+                        list[i] = 0
+                    }
+                }
+                if (isNaN(list[8])) {
+                    list.pop()
+                }
+                return list
+            }
+
+            function drawChartAbsolute(list1, list2){
+                var max = d3.max([d3.max(list1), d3.max(list2)]);
+
+                var absoluteScale = d3.scaleLinear()
+                    .domain([0,max])
+                    .range([0, ((height/100)*90)]);
+
+                var barBlue = chart.selectAll(".bar-blue")
+                    .data(list2);
+
+                var barRed = chart.selectAll(".bar-red")
+                    .data(list1);      
+                
+                var text = chart.selectAll(".label")
+                    .data(list2.length > list1.length ? list2 : list1); 
+
+                var textBlue = chart.selectAll(".text-blue");
+                var textRed = chart.selectAll(".text-red");   
+
+                textRed.remove();
+                textBlue.remove();
+                barBlue.exit().transition().remove();
+                barRed.exit().transition().remove();
+                text.exit().transition().remove();
+
+                barBlue.transition()
+                    .attr("transform", function(d,i){ return "translate(" + ((i * barHeight) + ((barHeight-1)/2)) + "," + (height - absoluteScale(d) - (height/10)) + ")"; })
+                    .attr("height", function(d){ return absoluteScale(d); });
+
+                barRed.transition()
+                    .attr("transform", function(d,i){ return "translate(" + (i * barHeight) + "," + (height - absoluteScale(d) - (height/10)) + ")"; })
+                    .attr("height", function(d){ return absoluteScale(d); });
+                
+                text.transition()
+                    .attr("y", function(d){ return (height - (height/13)); })
+                    .attr("x", function(d,i){return i * barHeight + barHeight / 2 })
+                    .attr("dy", ".35em")
+                    .text(function(d,i){return letters(i);}); 
+
+                barBlue.enter().append("rect")
+                    .attr("class","bar-blue")
+                    .attr("transform", function(d,i){ return "translate(" + ((i * barHeight) + ((barHeight-1)/2)) + "," + (height - absoluteScale(d) - (height/10)) + ")"; })
+                    .attr("height", function(d){ return absoluteScale(d); })
+                    .attr("width", barWidth-2);
+
+                barRed.enter().append("rect")
+                    .attr("class","bar-red")
+                    .attr("transform", function(d,i){ return "translate(" + (i * barHeight) + "," + (height - absoluteScale(d) - (height/10)) + ")"; })
+                    .attr("height", function(d){ return absoluteScale(d); })
+                    .attr("width", barWidth-2);
+
+                text.enter().append("text")
+                    .attr("class", "label")
+                    .attr("y", function(d){ return (height - (height/13)); })
+                    .attr("x", function(d,i){return i * barHeight + barHeight / 2 })
+                    .attr("dy", ".35em")
+                    .text(function(d,i){return letters(i);}); 
+            }
+
+            function drawChartProportional(list1, list2){
+                var proportionalScale = d3.scaleLinear()
+                    .range([0, ((height/100)*90)]);
+                
+                var text = chart.selectAll(".label");
+                var textBlue = chart.selectAll(".text-blue")
+                    .data(list2);
+                var textRed = chart.selectAll(".text-red")
+                    .data(list1);
+                
+                var barBlue = chart.selectAll(".bar-blue")
+                    .data(list2);
+                var barRed = chart.selectAll(".bar-red")
+                    .data(list1);  
+
+                text.remove();
+                textRed.exit().transition().remove();
+                textBlue.exit().transition().remove();
+                barBlue.exit().transition().remove();
+                barRed.exit().transition().remove();
+
+                proportionalScale.domain([0,d3.max(list1)]);
+
+                barRed.transition()
+                    .attr("transform", function(d,i){ return "translate(" + (i * (barHeight/2)) + "," + (height - proportionalScale(d) - (height/10)) + ")"; })
+                    .attr("height", function(d){ return proportionalScale(d); })
+                
+                textRed.transition()
+                    .attr("transform", function(d,i){ return "translate(" + (i * (barHeight/2) + (barHeight/4)) + "," + (height - (height/13)) + ")"; })
+                    .text(function(d,i){ return letters(i) });
+
+                barRed.enter().append("rect")
+                    .attr("class","bar-red")
+                    .attr("transform", function(d,i){ return "translate(" + (i * (barHeight/2)) + "," + (height - proportionalScale(d) - (height/10)) + ")"; })
+                    .attr("height", function(d){ return proportionalScale(d); })
+                    .attr("width", barWidth-2);
+                
+                textRed.enter().append("text")
+                    .attr("class", "text-red")
+                    .attr("transform", function(d,i){ return "translate(" + (i * (barHeight/2) + (barHeight/4)) + "," + (height - (height/13)) + ")"; })
+                    .text(function(d,i){ return letters(i) });
+
+                proportionalScale.domain([0,d3.max(list2)]);
+
+                barBlue.transition()
+                    .attr("transform", function(d,i){ return "translate(" + ((i * barHeight/2) + (9*barHeight/2)) + "," + (height - proportionalScale(d) - (height/10)) + ")"; })
+                    .attr("height", function(d){ return proportionalScale(d); });
+
+                textBlue.transition()
+                    .attr("transform", function(d,i){ return "translate(" + (i * (barHeight/2) + (barHeight/4) + (9*barHeight/2)) + "," + (height - (height/13)) + ")"; })
+                    .text(function(d,i){ return letters(i) });
+
+                barBlue.enter().append("rect")
+                    .attr("class","bar-blue")
+                    .attr("transform", function(d,i){ return "translate(" + ((i * barHeight/2) + (9*barHeight/2)) + "," + (height - proportionalScale(d) - (height/10)) + ")"; })
+                    .attr("height", function(d){ return proportionalScale(d); })
+                    .attr("width", barWidth-2);
+
+                textBlue.enter().append("text")
+                    .attr("class", "text-blue")
+                    .attr("transform", function(d,i){ return "translate(" + (i * (barHeight/2) + (barHeight/4) + (9 * barHeight/2)) + "," + (height - (height/13)) + ")"; })
+                    .text(function(d,i){ return letters(i) });
+            }
+
+            function propToggle(){
+                proportionalToggle = !proportionalToggle;
+                init();
+            }
+
+            function init(){
+                if (proportionalToggle === true){
+                    drawChartProportional(buildArray(selector1.property('selectedIndex')),buildArray(selector2.property('selectedIndex')))
+                } else {
+                    drawChartAbsolute(buildArray(selector1.property('selectedIndex')),buildArray(selector2.property('selectedIndex')))
+                };
+            }
+
+
+            // load data and draw default graph
+            d3.csv("./data/ctsop2016.csv", function(error, data){
+
+                // store data in global variable
+                chartData = data;
+
+                // create scrolling selector for 
+                selector1 = d3.select(".selectors")
+                                .append("select")
+                                .attr("class", "selector")
+                                .attr("id","selector1")
+                                .on("change", init);
+
+                var options = selector1.selectAll("option")
+                                .data(data)
+                            .enter().append("option")
+                                .html(function(d){
+                                    return d.AREA_NAME.replace(" UA","");
+                                });
+
+                selector2 = d3.select(".selectors")
+                                .append("select")
+                                .attr("class","selector")
+                                .attr("id","selector2")
+                                .on("change", init);
+
+                var options = selector2.selectAll("option")
+                                .data(data)
+                            .enter().append("option")
+                                .html(function(d){
+                                    return d.AREA_NAME.replace(" UA","");
+                                });
+                
+                document.getElementById("selector2").value = "WALES";
+                document.getElementById("selector1").value = "ENGLAND";
+                
+                // draw initial chart
+                init();
+            });
+        </script>
+    </body>
+</html>

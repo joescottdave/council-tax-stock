@@ -1,0 +1,120 @@
+body{
+    margin:0;
+    padding:0;
+}
+
+#app{
+        width: 100%;
+        height: 100%;
+        margin: 0;
+        -webkit-overflow-scrolling: touch;
+        font-family: 'Open Sans', sans-serif;
+    }
+
+section{
+        width: 100%;
+        height: 696px; 
+        position: relative;
+    }
+
+section:first-child{
+        /*background image found @ https://unsplash.com/search/terrace?photo=nrSzRUWqmoI */
+        background: cornflowerblue url("../assets/toa-heftiba-95456.jpg") no-repeat center;
+        background-size: cover;
+    }
+
+    section:nth-child(2){
+        background-color:blueviolet;
+    }
+
+    section:nth-child(3){
+        background-color:lightpink;
+    }
+
+    section:nth-child(4){
+        background-color: rosybrown;
+    }
+
+    h1, h2, svg text{
+        color: white;
+        height: 20px;
+        line-height: 21px;
+        font-size: 15px;
+    }
+
+    h1 {
+        position: absolute;
+        top: -20%;
+    }
+
+    section div{
+        position:absolute;
+        width: 100%;
+        height: 300px;
+        /*border: 0.5px solid #f7f7f7;*/
+        box-sizing: border-box;
+    }
+    
+    section div:first-child{
+        top:50%;
+    }
+
+    section div:nth-child(2){
+        top: 0;
+    }
+
+    .white {
+        color: white;
+    }
+
+    .black {
+        color:black;
+    }
+
+    .area{
+        cursor: pointer;
+    }
+
+    span#median-map-placement:before{
+        content: "above"
+    }
+
+    span#council-tax-bill{
+        font-size: 40px;
+        stroke: #f7f7f7;
+        stroke-width: 0.7px;
+    }
+
+@media screen and (min-aspect-ratio: 3/4) {
+    section {
+        height: 810px;
+    }
+
+    section div{
+        position:absolute;
+        width: 50%;
+        height: 100%;
+        /*border: 0.5px solid #f7f7f7;*/
+        box-sizing: border-box;
+        padding: 10px;
+    }
+    
+    section div:first-child{
+        top:0;
+        left: 0;
+    }
+
+    section div:nth-child(2){
+        left: 50%;
+        top: 0;
+    }
+
+    h1 {
+        top: 30%;
+    }
+
+    span#median-map-placement:before{
+        content: "opposite"
+    }
+
+}
