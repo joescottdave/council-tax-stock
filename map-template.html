@@ -138,6 +138,7 @@
 
             var svg;
             var g;
+            var key;
 
             var projection;
             var path;
@@ -147,6 +148,13 @@
             var medianColors = d3.scaleOrdinal()
                 .domain([0,8])
                 .range(["#EE4035", "#F3A530" ,"#56B949", "#30499B"]);
+
+            var letter = d3.scaleOrdinal()
+                    .domain([0,1,2,3,4,5,6,7,8])
+                    .range(['A','B','C','D','E','F','G','H','I']);
+            var letterColor = d3.scaleLinear()
+                            .domain([0,1,2,3,4])
+                            .range(["#FA5A5A", "#FFCB4F","#00BE70", "#295EA4" ]);
 
             var wales_data;
 
@@ -188,7 +196,32 @@
                     .attr('d', path)
                     .style('stroke', "#f7f7f7")
                     .style('stroke-width', '0.5px')
-                    .style('fill', function(d){ return getMedianHousehold(d) })
+                    .style('fill', function(d){ return getMedianHousehold(d) });
+
+                var keyData = [0,1,2,3,4];
+                var keyBoxes = key.selectAll('.boxes')
+                    .data(keyData);
+                var keyText = key.selectAll('.keytext')
+                    .data(keyData);
+                
+                keyBoxes.enter()
+                    .append('rect')
+                    .attr("class", "boxes")
+                    .attr("height", "20px")
+                    .attr("width", "20px")
+                    .attr("transform", function(d,i){ return "translate(4, " + ((i+1) * 24) + ")"; })
+                    .style("stroke", function(d,i){ return letterColor(i); })
+                    .style("stroke-width", "0px")
+                    .style("fill", function(d,i){ return letterColor(i); });
+                
+                keyText.enter()
+                    .append('text')
+                    .attr('class', 'keytext')
+                    .attr("transform", function(d,i){ return "translate(28, " + (15 + ((i+1) * 24)) + ")"; })
+                    // .style("fill", function(d,i){ return letterColor(i); })
+                    .style("fill", "black")
+                    .text(function(d,i){ return "Band " + letter(d); });
+                
             }
 
             function clicking(d){
@@ -240,6 +273,9 @@
                 
                 g = map.append("g");
                 gMedian = medianMap.append("g")
+
+                key = medianMap.append("g")
+                    .attr("class", "key");
 
                 projection = d3.geo.albers()
                     .rotate([0,0]);
@@ -331,13 +367,6 @@
             function getMedianHousehold(d){
                 // variable I want returned to produce fill color
                 var medColor;
-                // to be derived from this color scale
-                var letter = d3.scaleOrdinal()
-                    .domain([0,1,2,3,4,5,6,7,8])
-                    .range(['A','B','C','D','E','F','G','H','I']);
-                var letterColor = d3.scaleLinear()
-                            .domain([0,1,2,3,4])
-                            .range(["#FA5A5A", "#FFCB4F","#00BE70", "#295EA4" ]);
                 //get the relevant numbers for this area from CSV data and arrange into an array
                 var councilObject = (wales_data.filter(function(obj){ return obj.ECODE == d['id']; }))
                 var anArray = buildArray(councilObject[0]);
