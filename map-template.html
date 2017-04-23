@@ -133,6 +133,8 @@
             var count = 0;
             var width;
             var height;
+            var chartWidth;
+            var chartHeight;
 
             var svg;
             var g;
@@ -250,6 +252,9 @@
                     .attr("position","absolute")
                     .attr("width", width*0.8)
                     .attr("height", height*0.8);
+
+                chartWidth = width*0.8;
+                chartHeight = height*0.8;
                 
                 gChart = chart.append("g");
 
@@ -273,9 +278,6 @@
             }
 
             function drawChart(list, name){
-                var chartWidth = document.getElementById("chart").offsetWidth*0.8;
-                var chartHeight = document.getElementById("chart").offsetHeight*0.8;
-                console.log(chartHeight, chartWidth)
                 var barWidth = chartWidth/9;
                 var locationSpan = document.getElementById("location");
                 locationSpan.innerHTML = name;
@@ -329,7 +331,6 @@
             function getMedianHousehold(d){
                 // variable I want returned to produce fill color
                 var medColor;
-
                 // to be derived from this color scale
                 var letter = d3.scaleOrdinal()
                     .domain([0,1,2,3,4,5,6,7,8])
@@ -337,24 +338,19 @@
                 var letterColor = d3.scaleLinear()
                             .domain([0,1,2,3,4])
                             .range(["#FA5A5A", "#FFCB4F","#00BE70", "#295EA4" ]);
-
                 //get the relevant numbers for this area from CSV data and arrange into an array
                 var councilObject = (wales_data.filter(function(obj){ return obj.ECODE == d['id']; }))
                 var anArray = buildArray(councilObject[0]);
-
                 // variables for calculating 
                 var target = 0;
                 var median = 0;
-                
                 // the work 
                 // get the total for area
                 for (i=0; i < anArray.length; i++){
                     median += anArray[i]
                 };
-
                 // find the midway point
                 median = Math.round(median/2);
-
                 // add bands until we reach the midway point
                 for (i=0; i < anArray.length; i++){
                     if (target < median){
@@ -364,7 +360,6 @@
                         break;
                     }
                 }
-
                 // return newly arrived at color
                 return medColor;
             };
