@@ -83,6 +83,10 @@
                 .area{
                     cursor: pointer;
                 }
+
+                span#median-map-placement:before{
+                    content: "above"
+                }
             
             @media screen and (min-aspect-ratio: 3/4) {
                 section {
@@ -112,6 +116,10 @@
                     top: 50%;
                 }
 
+                span#median-map-placement:before{
+                    content: "opposite"
+                }
+
             }
         </style>
     </head>
@@ -130,7 +138,7 @@
             <section>
                 <div>
                     <h2 class="black">Median</h2>
-                    <p class="black">The map opposite shows the Council Tax Band of the median property within each of Wales&apos; Local Authorities</p>
+                    <p class="black">The map <span id="median-map-placement"></span> shows the Council Tax Band of the median property within each of Wales&apos; Local Authorities</p>
                 </div>
                 <div id="median-map">
                 </div>
@@ -307,8 +315,8 @@
                     .attr("width", width)
                     .attr("height", height*0.9);
 
-                chartWidth = width*0.5;
-                chartHeight = height*0.5;
+                chartWidth = width*0.6;
+                chartHeight = height*0.6;
                 
                 gChart = chart.append("g");
 
