@@ -29,7 +29,9 @@
                 }
             
             section:first-child{
-                    background-color:cornflowerblue;
+                    /*background image found @ https://unsplash.com/search/terrace?photo=nrSzRUWqmoI */
+                    background: cornflowerblue url("./assets/toa-heftiba-95456.jpg") no-repeat center;
+                    background-size: cover;
                 }
 
                 section:nth-child(2){
@@ -87,6 +89,10 @@
                 span#median-map-placement:before{
                     content: "above"
                 }
+
+                span#council-tax-bill{
+                    font-size: 40px;
+                }
             
             @media screen and (min-aspect-ratio: 3/4) {
                 section {
@@ -113,7 +119,7 @@
                 }
 
                 h1 {
-                    top: 50%;
+                    top: 30%;
                 }
 
                 span#median-map-placement:before{
@@ -126,7 +132,7 @@
     <body>
         <div id="app">
             <section>
-                <div><h1>Visualising <br />Council Tax Stock of Properties in Wales</h1></div>
+                <div><h1 class="black">Visualising <br />Council Tax Stock of Properties in Wales</h1></div>
             </section>
             <section>
                 <div id="chart">
@@ -139,6 +145,7 @@
                 <div>
                     <h2 class="black">Median</h2>
                     <p class="black">The map <span id="median-map-placement"></span> shows the Council Tax Band of the median property within each of Wales&apos; Local Authorities</p>
+                    <p>The median property for the whole of Wales is in Council Tax Band C.  The average annual council tax bill for such a property is shown below: <br /><span id="council-tax-bill">£1262.22</span><br /><!--Clicking on the map will show you the bill for the median property in the relevant area.--></p>
                 </div>
                 <div id="median-map">
                 </div>
@@ -205,7 +212,7 @@
                     .enter()
                     .append('path')
                     .attr('class', 'area')
-                    .attr('id', function(d) { return d['id']; })
+                    .attr('data-key', function(d) { return d['id']; })
                     .attr('d', path)
                     .style('fill', medianColors(2))
                     .style('stroke', "#f7f7f7")
@@ -216,11 +223,12 @@
                     .enter()
                     .append('path')
                     .attr('class', 'area')
-                    .attr('id', function(d) { return d['id']; })
+                    .attr('data-key', function(d) { return d['id']; })
                     .attr('d', path)
                     .style('stroke', "#f7f7f7")
                     .style('stroke-width', '0.5px')
-                    .style('fill', function(d){ return getMedianHousehold(d) });
+                    .style('fill', function(d){ return getMedianHousehold(d) })
+                    .on("click", medianClicking);
 
                 var keyData = [0,1,2,3,4];
                 var keyBoxes = key.selectAll('.boxes')
@@ -252,7 +260,7 @@
                 if (active.node() === this){
                     null;
                 }else{
-                    var id = this.id
+                    var id = this.dataset.key;
                     var arrayObject = (wales_data.filter(function(obj){
                         return obj.ECODE == id;
                     }));
@@ -268,7 +276,9 @@
                 }
             }
 
-            function medianClicking(d){}
+            function medianClicking(d){
+                console.log(this.dataset.key);
+            }
 
             function buildArray(object){
                 var list = [parseInt(object.BAND_A.replace(/,/g,""), 10), parseInt(object.BAND_B.replace(/,/g,""), 10), parseInt(object.BAND_C.replace(/,/g,""), 10), parseInt(object.BAND_D.replace(/,/g,""), 10), parseInt(object.BAND_E.replace(/,/g,""), 10), parseInt(object.BAND_F.replace(/,/g,""), 10), parseInt(object.BAND_G.replace(/,/g,""), 10), parseInt(object.BAND_H.replace(/,/g,""), 10),parseInt(object.BAND_I.replace(/,/g,""),10)];
