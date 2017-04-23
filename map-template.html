@@ -44,17 +44,16 @@
                     background-color: rosybrown;
                 }
 
-                h1, h2, h3, h4, h5, h6, p, svg text{
-                    font-size: 0.6em;
+                h1, h2, svg text{
                     color: white;
-                    font-family: 'Open Sans', sans-serif;
-                    line-height: 2em;
-                }
-
-                h1, h2 {
                     height: 20px;
                     line-height: 15px;
                     font-size: 15px;
+                }
+
+                h1 {
+                    position: absolute;
+                    top: -20%;
                 }
 
                 section div{
@@ -72,16 +71,12 @@
                 section div:nth-child(2){
                     top: 0;
                 }
-
-                .chart text {
-                    font-weight: 800;
-                    font-size: 15px;
-                }
             
             @media screen and (min-aspect-ratio: 3/4) {
                 section {
                     height: 810px;
                 }
+
                 section div{
                     position:absolute;
                     width: 50%;
@@ -100,24 +95,30 @@
                     left: 50%;
                     top: 0;
                 }
+
+                h1 {
+                    top: 50%;
+                }
+
             }
         </style>
     </head>
     <body>
         <div id="app">
             <section>
-                <div><h1>Council Tax Stock of Properties in Wales</h1></div></section>
+                <div><h1>Council Tax Stock of Properties in Wales</h1></div>
+            </section>
             <section>
-                <div id="chart"><h2>Distribution of Properties by Council Tax Band in <span id="location">Wales</span></h2></div>
+                <div id="chart"><h2 class="label">Distribution of Properties by Council Tax Band in <span id="location">Wales</span></h2>
+</div>
                 <div id="map"><!--<p>Click to see an individual county's distribution</p>--></div>
             </section>
             <section>
-                <div id="median-key">
-                    <h2>Median</h2>
+                <div id="median-key"> 
                 </div>
                 <div id="median-map">
-                    <h2></h2> 
                 </div>
+                <!--<h2 class="label">Median</h2>-->
             </section>
             <section></section>
         </div>
