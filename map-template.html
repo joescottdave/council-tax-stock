@@ -12,7 +12,8 @@
             html{
                 margin:0;
                 padding:0;
-                overflow: hidden;
+                overflow-x: hidden;
+                -webkit-overflow-scrolling: touch;
             }
 
             body{
@@ -55,7 +56,7 @@
                 }
 
                 h1, h2 {
-                    height: 10px;
+                    height: 20px;
                     line-height: 15px;
                     font-size: 15px;
                 }
@@ -74,11 +75,6 @@
 
                 section div:nth-child(2){
                     top: 0;
-                }
-
-                svg.chart {
-                    position: absolute;
-                    bottom: 0;
                 }
 
                 .chart text {
@@ -253,8 +249,8 @@
                 chart = d3.select("#chart")
                     .append('svg')
                     .attr("position","absolute")
-                    .attr("width", width)
-                    .attr("height", height);
+                    .attr("width", width*0.8)
+                    .attr("height", height*0.8);
                 
                 gChart = chart.append("g");
 
@@ -278,8 +274,8 @@
             }
 
             function drawChart(list, name){
-                var chartWidth = document.getElementById("chart").offsetWidth;
-                var chartHeight = document.getElementById("chart").offsetHeight;
+                var chartWidth = document.getElementById("chart").offsetWidth*0.8;
+                var chartHeight = document.getElementById("chart").offsetHeight*0.8;
                 console.log(chartHeight, chartWidth)
                 var barWidth = chartWidth/9;
                 var locationSpan = document.getElementById("location");
