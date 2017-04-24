@@ -95,6 +95,15 @@ section:first-child{
         -webkit-appearance: none;
     }
 
+    select#selector1{
+        width: 90px;
+    }
+
+    select#selector2{
+        margin-left: 5px;
+        width: 120px;
+    }
+
 @media screen and (min-aspect-ratio: 3/4) {
     section {
         height: 810px;
