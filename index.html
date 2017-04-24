@@ -392,7 +392,7 @@
 
                 text.enter().append("text")
                     .attr("y", function(d){ return (chartHeight - x(d) - 10); })
-                    .attr("x", function(d,i){return i * barWidth + barWidth / 2 })
+                    .attr("x", function(d,i){return (i * barWidth + barWidth / 2) - 4 })
                     .attr("dy", ".35em")
                     .style("fill", function(){ return (count > 0) ? medianColors(0) : medianColors(2) })
                     .text(function(d,i){return letters(i);}); 
