@@ -23,11 +23,11 @@
                     <h2 class="white">Distribution of Properties by Council Tax Band in <span id="location">Wales</span></h2>
                     <p class="white">The chart below shows the weighted distribution of all properties in Wales across Council Tax Bands A to I.  Clicking on the map will instead show the distribution for the relevant Local Authority.</p>
                 </div>
-                <div id="map"><!--<p>Click to see an individual county's distribution</p>--></div>
+                <div id="distribution-map"><!--<p>Click to see an individual county's distribution</p>--></div>
             </section>
             <section>
                 <div>
-                    <h2 class="black">Median</h2>
+                    <h2 class="black">Median Council Tax Band by Local Authority in Wales</h2>
                     <p class="black">The map <span id="median-map-placement"></span> shows the Council Tax Band of the median property within each of Wales&apos; Local Authorities</p>
                     <p>The median property for the whole of Wales is in Council Tax Band C as it is in 10 of its Local Authorities.  The average annual council tax bill for such a property is shown below: <br /><span id="council-tax-bill">£1262.22</span><span id="second_location">&nbsp;in Wales</span><br />Clicking on the map will show you the bill for the median property in the relevant area.</p>
                 </div>
@@ -243,23 +243,33 @@
             }
 
             function init() {
-                width = document.getElementById("map").offsetWidth;
-                height = document.getElementById("map").offsetHeight;
+                width = document.getElementById("distribution-map").offsetWidth;
 
-                map = d3.select("#map")
+                height = document.getElementById("distribution-map").offsetHeight;
+
+                distributionMap = d3.select("#distribution-map")
                     .append("svg")
+                    .attr("class", "map")
                     .attr("position", "absolute")
                     .attr("width", width)
                     .attr("height", height);
 
                 medianMap = d3.select("#median-map")
                     .append("svg")
+                    .attr("class", "map")
                     .attr("position", "absolute")
                     .attr("width", width)
                     .attr("height", height);
+
+                moneyMap = d3.select("#money-map")
+                    .append("svg")
+                    .attr("class","map")
+                    .attr("width", width)
+                    .attr("height", height);
                 
-                g = map.append("g");
+                g = distributionMap.append("g");
                 gMedian = medianMap.append("g")
+                gMoney = moneyMap.append("g");
 
                 key = medianMap.append("g")
                     .attr("class", "key");
@@ -310,13 +320,6 @@
                                 .html(function(d){
                                     return d;
                                 });
-
-                moneyMap = d3.select("#money-map")
-                    .append("svg")
-                    .attr("width", width)
-                    .attr("height", height);
-                
-                gMoney = moneyMap.append("g");
 
                 queue()
                     .defer(d3.json, "./geoJSON/topo_lad.json")
