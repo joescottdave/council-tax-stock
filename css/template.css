@@ -91,13 +91,9 @@ section:first-child{
         border-radius: 0;
         border: #f7f7f7 solid 0.5px;
         color: black;
+        -webkit-appearance: none;
     }
-
-    select option {
-        background-color: white;
-        color: black;
-    }
-
+    
 @media screen and (min-aspect-ratio: 3/4) {
     section {
         height: 810px;
