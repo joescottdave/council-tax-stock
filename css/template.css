@@ -85,6 +85,10 @@ section:first-child{
         stroke-width: 0.7px;
     }
 
+    select {
+        font-size: 16px;
+    }
+
 @media screen and (min-aspect-ratio: 3/4) {
     section {
         height: 810px;
