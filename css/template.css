@@ -90,6 +90,12 @@ section:first-child{
         background-color: white;
         border-radius: 0;
         border: #f7f7f7 solid 0.5px;
+        color: black;
+    }
+
+    select option {
+        background-color: white;
+        color: black;
     }
 
 @media screen and (min-aspect-ratio: 3/4) {
