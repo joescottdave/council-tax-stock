@@ -179,7 +179,7 @@ function medianClicking(d){
 }
 
 function buildArray(object){
-    var list = [parseInt(object.BAND_A.replace(/,/g,""), 10), parseInt(object.BAND_B.replace(/,/g,""), 10), parseInt(object.BAND_C.replace(/,/g,""), 10), parseInt(object.BAND_D.replace(/,/g,""), 10), parseInt(object.BAND_E.replace(/,/g,""), 10), parseInt(object.BAND_F.replace(/,/g,""), 10), parseInt(object.BAND_G.replace(/,/g,""), 10), parseInt(object.BAND_H.replace(/,/g,""), 10),parseInt(object.BAND_I.replace(/,/g,""),10)];
+    var list = [object.BAND_A, object.BAND_B, object.BAND_C, object.BAND_D, object.BAND_E, object.BAND_F, object.BAND_G, object.BAND_H, object.BAND_I];
     for (i=0; i < 8; i++){
         if(isNaN(list[i])){
             list[i] = 0
@@ -282,6 +282,23 @@ function init() {
                     return obj
                 }
             });
+
+            //Has to be a better way to do the below
+            wales_data.forEach(function(element){
+                element.BAND_A = parseInt(element.BAND_A.replace(/,/g,""))
+                element.BAND_B = parseInt(element.BAND_B.replace(/,/g,""))
+                element.BAND_C = parseInt(element.BAND_C.replace(/,/g,""))
+                element.BAND_D = parseInt(element.BAND_D.replace(/,/g,""))
+                element.BAND_E = parseInt(element.BAND_E.replace(/,/g,""))
+                element.BAND_F = parseInt(element.BAND_F.replace(/,/g,""))
+                element.BAND_G = parseInt(element.BAND_G.replace(/,/g,""))
+                element.BAND_H = parseInt(element.BAND_H.replace(/,/g,""))
+                element.BAND_I = parseInt(element.BAND_I.replace(/,/g,""))
+                if (/^Isle/.test(element.AREA_NAME)){
+                    element.AREA_NAME = "Isle of Anglesey / Ynys Mon"
+                }
+            }, this);
+
             charge_data = ctcharges.filter(function(obj){
                 if (/^W/.test(obj.ECODE)){
                     return obj
@@ -427,6 +444,7 @@ function colorMoneyMap(input){
                 document.getElementById("selector2").style.visibility = "hidden"
                 var ratio = this.dataset.charge / this.dataset.wage;
                 var ratioScale = d3.scaleLinear()
+                                    // .domain([1.8, 3.7])
                                     .domain([d3.min(wageRatios), d3.max(wageRatios)])
                                     .range(["#FFF", "#56B949"]);
                 return ratioScale(ratio);
