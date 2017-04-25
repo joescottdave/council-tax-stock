@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="author" content="Joseph Scott Davies" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <script src="./js/d3.js"></script>
+        <script src="//cdnjs.cloudflare.com/ajax/libs/queue-async/1.0.7/queue.min.js"></script>
+        <style></style>
+    </head>
+    <body>
+        <div id="app">
+            <svg width="1000px" height="650px"></svg>
+        </div>
+        <script>
+            var wales_data;
+            var wales_data_intermediate;
+            var wales_data_stack;
+
+            queue()
+            .defer(d3.csv, "./data/ctsop2016.csv")
+            .await(function(error, ctsop2016){
+                wales_data = ctsop2016.filter(function(obj){
+                    if (/^W0/.test(obj.ECODE)){
+                        return obj;
+                    };
+                });
+
+            //Has to be a better way to do the below
+            wales_data.forEach(function(element){
+                element.BAND_A = parseInt(element.BAND_A.replace(/,/g,""))
+                element.BAND_B = parseInt(element.BAND_B.replace(/,/g,""))
+                element.BAND_C = parseInt(element.BAND_C.replace(/,/g,""))
+                element.BAND_D = parseInt(element.BAND_D.replace(/,/g,""))
+                element.BAND_E = parseInt(element.BAND_E.replace(/,/g,""))
+                element.BAND_F = parseInt(element.BAND_F.replace(/,/g,""))
+                element.BAND_G = parseInt(element.BAND_G.replace(/,/g,""))
+                element.BAND_H = parseInt(element.BAND_H.replace(/,/g,""))
+                element.BAND_I = parseInt(element.BAND_I.replace(/,/g,""))
+                if (/^Isle/.test(element.AREA_NAME)){
+                    element.AREA_NAME = "Isle of Anglesey / Ynys Mon"
+                }
+            }, this);
+
+            var stack = d3.stack()
+            .keys(["BAND_A", "BAND_B","BAND_C","BAND_D","BAND_E","BAND_F","BAND_G","BAND_H","BAND_I"])
+            .order(d3.stackOrderNone)
+            .offset(d3.stackOffsetNone);
+
+            var series = stack(wales_data);
+
+            var svg = d3.select("svg"),
+            margin = {top: 20, right: 30, bottom: 30, left: 60},
+            width = 800,
+            height = 500;
+
+            var x = d3.scaleBand()
+                .domain(wales_data.map(function(d) { return d.AREA_NAME; }))
+                .rangeRound([margin.left, width - margin.right])
+                .padding(0.1);
+
+            var y = d3.scaleLinear()
+                .domain([d3.min(series, minStack), d3.max(series, maxStack)])
+                .rangeRound([height - margin.bottom, margin.top]);
+
+            var z = d3.scaleOrdinal(d3.schemeCategory10);
+            var letterColor = d3.scaleOrdinal()
+                .domain(["BAND_A", "BAND_B","BAND_C","BAND_D","BAND_E","BAND_F","BAND_G","BAND_H","BAND_I"])
+                .range(["#FA5A5A", "#FFCB4F","#00BE70", "#295EA4","#5200D8","#EC4A94","#30499B", "#00be70", "#FF6000"]);
+
+            svg.append("g")
+            .selectAll("g")
+            .data(series)
+            .enter().append("g")
+                .attr("fill", function(d) { console.log(d.key); return letterColor(d.key); })
+            .selectAll("rect")
+                .data(function(d) { return d; })
+            .enter().append("rect")
+                .attr("width", x.bandwidth)
+                .attr("x", function(d) { return x(d.data.AREA_NAME); })
+                .attr("y", function(d) { return y(d[1]); })
+                .attr("height", function(d) { return y(d[0]) - y(d[1]); })
+
+            svg.append("g")
+                .attr("transform", "translate(0," + y(0) + ")")
+                .call(d3.axisBottom(x))
+                .selectAll("text")  
+                    .style("text-anchor", "start")
+                    .attr("dx", ".8em")
+                    .attr("dy", ".15em")
+                    .attr("transform", "rotate(35)" );
+
+            svg.append("g")
+                .attr("transform", "translate(" + margin.left + ",0)")
+                .call(d3.axisLeft(y));
+        
+
+            function minStack(array) {
+                return d3.min(array, function(d) { return d[0]; });
+            }
+
+            function maxStack(array) {
+                return d3.max(array, function(d) { return d[1]; });
+            }
+
+                            console.log(series);                
+
+                            });
+
+                            function createIntermediate(){
+                                wales_data_intermediate = ['BAND_A','BAND_B','BAND_C','BAND_D','BAND_E','BAND_F','BAND_G','BAND_H', 'BAND_I'].map(function(key, i){
+                                    return wales_data.map(function(d,j){
+                                        return { x: d['AREA_NAME'], y: d[key] };
+                                    })
+                                })
+                            }
+        </script>
+    </body>
+</html>
