@@ -160,7 +160,7 @@ function clicking(d){
         locationSpan.transition(1).style("color",medianColors(0));
         active.style("fill", medianColors(2));
         active = d3.select(this);
-        active.style("fill", medianColors(0));
+        active.transition().style("fill", medianColors(0));
         drawChart(list2,areaName);
     }
 }

@@ -12,14 +12,14 @@ body{
         overflow: hidden;
     }
 
-section{
+section, header{
         width: 100%;
         height: 696px; 
         position: relative;
         background-color: white;
     }
 
-section:first-child{
+section:first-child, header{
         /*background image found @ https://unsplash.com/search/terrace?photo=nrSzRUWqmoI */
         background: cornflowerblue url("../assets/toa-heftiba-95456.jpg") no-repeat center;
         background-size: cover;
@@ -108,7 +108,7 @@ section:first-child{
     }
 
 @media screen and (min-aspect-ratio: 3/4) {
-    section {
+    section, header{
         height: 810px;
     }
 
