@@ -6,12 +6,14 @@
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <script src="./js/d3.js"></script>
         <script src="//cdnjs.cloudflare.com/ajax/libs/queue-async/1.0.7/queue.min.js"></script>
+        <link href='https://fonts.googleapis.com/css?family=Open+Sans:300' rel='stylesheet' type='text/css' />
         <style>
-            #app{ width: 100%; height: 100vh; }
+            #app{ width: 100%; height: 100vh; font-family: 'Open Sans', Arial, Helvetica, sans-serif;}
         </style>
     </head>
     <body>
         <div id="app">
+            <h1>Stock of Properties in Wales Local Authorities broken down by Council Tax Band</h1>
             <!--<svg width="1000px" height="650px"></svg>-->
         </div>
         <script>
@@ -79,7 +81,7 @@
             var z = d3.scaleOrdinal(d3.schemeCategory10);
             var letterColor = d3.scaleOrdinal()
                 .domain(["BAND_A", "BAND_B","BAND_C","BAND_D","BAND_E","BAND_F","BAND_G","BAND_H","BAND_I"])
-                .range(["#FA5A5A", "#FFCB4F","#00BE70", "#295EA4","#5200D8","#EC4A94","#30499B", "#00be70", "#FF6000"]);
+                .range(["#FA5A5A", "#FFCB4F","#00BE70", "#295EA4","#5200D8","#EC4A94","#9F8BE5", "#28A9ff", "#FF872F"]);
 
             svg.append("g")
             .selectAll("g")
@@ -92,7 +94,7 @@
                 .attr("width", x.bandwidth)
                 .attr("x", function(d) { return x(d.data.AREA_NAME); })
                 .attr("y", function(d) { return y(d[1]); })
-                .attr("height", function(d) { return y(d[0]) - y(d[1]); })
+                .attr("height", function(d) { return y(d[0]) - y(d[1]); });
 
             svg.append("g")
                 .attr("transform", "translate(0," + y(0) + ")")
@@ -106,7 +108,36 @@
             svg.append("g")
                 .attr("transform", "translate(" + margin.left + ",0)")
                 .call(d3.axisLeft(y));
+
+            key = svg.append("g")
+                .attr("class", "key");
         
+            var keyData = [0,1,2,3,4,5,6,7,8];
+            var keyBoxes = key.selectAll('.boxes')
+                .data(keyData);
+            var keyText = key.selectAll('.keytext')
+                .data(keyData);
+            var letter = d3.scaleOrdinal()
+                .domain([0,1,2,3,4,5,6,7,8])
+                .range(['A','B','C','D','E','F','G','H','I']);
+    
+            keyBoxes.enter()
+                .append('rect')
+                .attr("class", "boxes")
+                .attr("height", "20px")
+                .attr("width", "20px")
+                .attr("transform", function(d,i){ return "translate(" + (width-(width/10)) + "," + ((i+1) * 24) + ")"; })
+                .style("stroke", function(d,i){ return letterColor(i); })
+                .style("stroke-width", "0px")
+                .style("fill", function(d,i){ return letterColor(i); });
+            
+            keyText.enter()
+                .append('text')
+                .attr('class', 'keytext')
+                .attr("transform", function(d,i){ return "translate("+ (width-(width/10) + 28) + ", " + (15 + ((i+1) * 24)) + ")"; })
+                // .style("fill", function(d,i){ return letterColor(i); })
+                .style("fill", "black")
+                .text(function(d,i){ return "Band " + letter(d); });
 
             function minStack(array) {
                 return d3.min(array, function(d) { return d[0]; });
