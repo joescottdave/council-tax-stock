@@ -85,7 +85,7 @@
             .selectAll("g")
             .data(series)
             .enter().append("g")
-                .attr("fill", function(d) { console.log(d.key); return letterColor(d.key); })
+                .attr("fill", function(d) { return letterColor(d.key); })
             .selectAll("rect")
                 .data(function(d) { return d; })
             .enter().append("rect")
