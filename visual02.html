@@ -124,9 +124,9 @@
             keyBoxes.enter()
                 .append('rect')
                 .attr("class", "boxes")
-                .attr("height", "20px")
-                .attr("width", "20px")
-                .attr("transform", function(d,i){ return "translate(" + (width-(width/10)) + "," + ((i+1) * 24) + ")"; })
+                .attr("height", function(){ return width/66; })
+                .attr("width", function(){ return width/66; })
+                .attr("transform", function(d,i){ return "translate(" + (width-(width/10)) + "," + ((i+1) * (width/66 + 2)) + ")"; })
                 .style("stroke", function(d,i){ return letterColor(i); })
                 .style("stroke-width", "0px")
                 .style("fill", function(d,i){ return letterColor(i); });
@@ -134,9 +134,10 @@
             keyText.enter()
                 .append('text')
                 .attr('class', 'keytext')
-                .attr("transform", function(d,i){ return "translate("+ (width-(width/10) + 28) + ", " + (15 + ((i+1) * 24)) + ")"; })
+                .attr("transform", function(d,i){ return "translate(" + (width-(width/10) + (width/60)) + ", " + ((i+1) * (width/66 + 2) + (width/80)) + ")"; })
                 // .style("fill", function(d,i){ return letterColor(i); })
                 .style("fill", "black")
+                .style("font-size", function(){ return width/80; })
                 .text(function(d,i){ return "Band " + letter(d); });
 
             function minStack(array) {
